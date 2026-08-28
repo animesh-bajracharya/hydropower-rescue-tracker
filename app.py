@@ -85,27 +85,6 @@ initial_data = [
         0
     ),
 
-    (
-        "Sanjen Khola",
-        28.263472,
-        85.277917,
-        "Operational / Flood Affected",
-        "78 MW",
-        0,
-        0,
-        0
-    ),
-
-    (
-        "Upper Mailung-A",
-        28.185417,
-        85.208333,
-        "Under Construction / Flood Affected",
-        "6.42 MW",
-        0,
-        0,
-        0
-    ),
 
     (
         "Mailung Khola",
