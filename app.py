@@ -27,7 +27,7 @@ DB_FILE = "data.db"
 # INITIAL HYDROPOWER DATA
 # ============================================================
 #
-# Tuple structure:
+# Structure:
 #
 # (
 #     name,
@@ -40,17 +40,16 @@ DB_FILE = "data.db"
 #     unknown
 # )
 #
-# Use 0 instead of None for personnel counts because Streamlit
-# number_input() requires an integer.
-#
-# If you don't know a figure, "0" currently means:
-# "No confirmed number entered yet."
-#
-# It does NOT necessarily mean zero people.
+# IMPORTANT:
+# The GPS coordinates below are taken from your latest
+# version of the data.
 # ============================================================
 
 initial_data = [
-    # ---------------- RASUWA ----------------
+
+    # ========================================================
+    # RASUWA
+    # ========================================================
 
     (
         "Rasuwagadhi Hydropower",
@@ -96,7 +95,6 @@ initial_data = [
         0
     ),
 
-
     (
         "Mailung Khola",
         28.075417,
@@ -140,7 +138,11 @@ initial_data = [
         8,
         0
     ),
-    # ---------------- NUWAKOT ----------------
+
+
+    # ========================================================
+    # NUWAKOT
+    # ========================================================
 
     (
         "Upper Trishuli-3A",
@@ -209,7 +211,6 @@ def init_db():
 
     c = conn.cursor()
 
-    # Create database table
     c.execute("""
         CREATE TABLE IF NOT EXISTS projects (
 
@@ -236,7 +237,7 @@ def init_db():
     """)
 
     # --------------------------------------------------------
-    # Insert initial project data
+    # Insert initial records
     # --------------------------------------------------------
 
     for item in initial_data:
@@ -261,7 +262,10 @@ def init_db():
     conn.close()
 
 
-# Initialize database
+# ============================================================
+# INITIALIZE DATABASE
+# ============================================================
+
 init_db()
 
 
@@ -286,7 +290,9 @@ def get_data():
             trapped,
             unknown,
             last_updated
+
         FROM projects
+
         ORDER BY id
         """,
         conn
@@ -295,7 +301,7 @@ def get_data():
     conn.close()
 
     # --------------------------------------------------------
-    # Protect the application against NULL values
+    # Protect against NULL / NaN personnel values
     # --------------------------------------------------------
 
     numeric_columns = [
@@ -355,6 +361,13 @@ def update_record(
 
 
 # ============================================================
+# LOAD DATA
+# ============================================================
+
+df = get_data()
+
+
+# ============================================================
 # HEADER
 # ============================================================
 
@@ -372,21 +385,20 @@ st.markdown(
 
 
 # ============================================================
-# LOAD DATABASE
+# SUMMARY METRICS
 # ============================================================
 
-df = get_data()
+total_rescued = int(
+    df["rescued"].sum()
+)
 
+total_trapped = int(
+    df["trapped"].sum()
+)
 
-# ============================================================
-# METRIC SUMMARY
-# ============================================================
-
-total_rescued = int(df["rescued"].sum())
-
-total_trapped = int(df["trapped"].sum())
-
-total_unknown = int(df["unknown"].sum())
+total_unknown = int(
+    df["unknown"].sum()
+)
 
 total_projects = len(df)
 
@@ -425,6 +437,33 @@ st.divider()
 
 
 # ============================================================
+# PROJECT SELECTION
+# ============================================================
+#
+# IMPORTANT:
+# This selectbox is ABOVE the map so the map knows which
+# project has been selected.
+# ============================================================
+
+st.subheader(
+    "📍 Select Project"
+)
+
+selected_project = st.selectbox(
+    "Select a project to highlight on the map",
+    df["name"].tolist(),
+    label_visibility="collapsed"
+)
+
+
+# Get selected project
+
+selected_data = df[
+    df["name"] == selected_project
+].iloc[0]
+
+
+# ============================================================
 # MAP + UPDATE PANEL
 # ============================================================
 
@@ -443,61 +482,105 @@ with left_col:
         "🗺️ Hydropower Locations & Rescue Map"
     )
 
-    # --------------------------------------------------------
-    # Base map
-    # --------------------------------------------------------
 
-    m = folium.Map(
-        location=[
+    # ========================================================
+    # DETERMINE MAP CENTER
+    # ========================================================
+
+    if (
+        pd.notna(selected_data["lat"])
+        and pd.notna(selected_data["lon"])
+    ):
+
+        map_center = [
+            float(selected_data["lat"]),
+            float(selected_data["lon"])
+        ]
+
+        map_zoom = 14
+
+    else:
+
+        # If selected project has no GPS coordinate
+
+        map_center = [
             28.0800,
             85.2500
-        ],
-        zoom_start=10,
+        ]
+
+        map_zoom = 10
+
+
+    # ========================================================
+    # CREATE MAP
+    # ========================================================
+
+    m = folium.Map(
+        location=map_center,
+        zoom_start=map_zoom,
         tiles="OpenStreetMap"
     )
 
-    # --------------------------------------------------------
-    # Google Satellite Layer
-    # --------------------------------------------------------
+
+    # ========================================================
+    # GOOGLE SATELLITE
+    # ========================================================
 
     folium.TileLayer(
         tiles=(
             "https://mt1.google.com/vt/"
             "lyrs=y&x={x}&y={y}&z={z}"
         ),
+
         attr="Google",
+
         name="Google Satellite",
+
         overlay=False,
+
         control=True
+
     ).add_to(m)
 
-    # --------------------------------------------------------
-    # Project markers
-    # --------------------------------------------------------
+
+    # ========================================================
+    # PROJECT MARKERS
+    # ========================================================
 
     for _, row in df.iterrows():
 
-        # ----------------------------------------------
+        # ----------------------------------------------------
         # Skip projects without coordinates
-        # ----------------------------------------------
+        # ----------------------------------------------------
 
-        if pd.isna(row["lat"]) or pd.isna(row["lon"]):
+        if (
+            pd.isna(row["lat"])
+            or pd.isna(row["lon"])
+        ):
 
             continue
 
-        # ----------------------------------------------
-        # Safely convert values to integers
-        # ----------------------------------------------
 
-        rescued = int(row["rescued"])
+        # ----------------------------------------------------
+        # Personnel values
+        # ----------------------------------------------------
 
-        trapped = int(row["trapped"])
+        rescued = int(
+            row["rescued"]
+        )
 
-        unknown = int(row["unknown"])
+        trapped = int(
+            row["trapped"]
+        )
 
-        # ----------------------------------------------
-        # Marker color
-        # ----------------------------------------------
+        unknown = int(
+            row["unknown"]
+        )
+
+
+        # ====================================================
+        # NORMAL MARKER COLOR
+        # ====================================================
 
         if trapped > 0:
 
@@ -515,15 +598,16 @@ with left_col:
 
             marker_color = "blue"
 
-        # ----------------------------------------------
-        # Popup
-        # ----------------------------------------------
+
+        # ====================================================
+        # POPUP
+        # ====================================================
 
         popup_html = f"""
         <div
             style="
                 font-family: Arial;
-                width: 240px;
+                width: 250px;
             "
         >
 
@@ -533,20 +617,22 @@ with left_col:
 
             <b>Status:</b>
             {row['status']}
+
             <br><br>
 
             <b>Capacity:</b>
             {row['capacity']}
-            <br>
 
             <hr>
 
             <b>👷 Rescued:</b>
             {rescued}
+
             <br>
 
             <b>🚨 Trapped / Awaiting:</b>
             {trapped}
+
             <br>
 
             <b>❓ Unknown / Missing:</b>
@@ -562,39 +648,197 @@ with left_col:
         </div>
         """
 
-        # ----------------------------------------------
-        # Marker
-        # ----------------------------------------------
 
-        folium.Marker(
-            location=[
-                float(row["lat"]),
-                float(row["lon"])
-            ],
+        # ====================================================
+        # IS THIS THE SELECTED PROJECT?
+        # ====================================================
 
-            popup=folium.Popup(
-                popup_html,
-                max_width=350
-            ),
+        is_selected = (
+            row["name"] == selected_project
+        )
 
-            tooltip=row["name"],
 
-            icon=folium.Icon(
-                color=marker_color,
-                icon="info-sign"
-            )
+        # ====================================================
+        # SELECTED PROJECT
+        # ====================================================
 
-        ).add_to(m)
+        if is_selected:
 
-    # --------------------------------------------------------
-    # Layer control
-    # --------------------------------------------------------
+            # ------------------------------------------------
+            # Large translucent circle
+            # ------------------------------------------------
+
+            folium.Circle(
+                location=[
+                    float(row["lat"]),
+                    float(row["lon"])
+                ],
+
+                radius=600,
+
+                color="blue",
+
+                fill=True,
+
+                fill_color="blue",
+
+                fill_opacity=0.12,
+
+                weight=3,
+
+                tooltip=(
+                    f"📍 SELECTED SITE: "
+                    f"{row['name']}"
+                )
+
+            ).add_to(m)
+
+
+            # ------------------------------------------------
+            # Outer ring
+            # ------------------------------------------------
+
+            folium.CircleMarker(
+                location=[
+                    float(row["lat"]),
+                    float(row["lon"])
+                ],
+
+                radius=25,
+
+                color="blue",
+
+                fill=False,
+
+                weight=5,
+
+                opacity=1.0
+
+            ).add_to(m)
+
+
+            # ------------------------------------------------
+            # Selected marker
+            # ------------------------------------------------
+
+            folium.Marker(
+                location=[
+                    float(row["lat"]),
+                    float(row["lon"])
+                ],
+
+                popup=folium.Popup(
+                    popup_html,
+                    max_width=350
+                ),
+
+                tooltip=(
+                    f"📍 SELECTED: "
+                    f"{row['name']}"
+                ),
+
+                icon=folium.Icon(
+                    color="blue",
+                    icon="star",
+                    prefix="fa"
+                )
+
+            ).add_to(m)
+
+
+        # ====================================================
+        # NORMAL PROJECT
+        # ====================================================
+
+        else:
+
+            folium.Marker(
+                location=[
+                    float(row["lat"]),
+                    float(row["lon"])
+                ],
+
+                popup=folium.Popup(
+                    popup_html,
+                    max_width=350
+                ),
+
+                tooltip=row["name"],
+
+                icon=folium.Icon(
+                    color=marker_color,
+                    icon="info-sign"
+                )
+
+            ).add_to(m)
+
+
+    # ========================================================
+    # MAP LEGEND
+    # ========================================================
+
+    legend_html = """
+    <div style="
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 9999;
+        background-color: white;
+        padding: 12px 15px;
+        border: 2px solid #777;
+        border-radius: 6px;
+        font-family: Arial;
+        font-size: 13px;
+        line-height: 1.7;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    ">
+
+        <b>MAP LEGEND</b>
+        <br>
+
+        <span style="color:red; font-size:18px;">●</span>
+        Active Rescue / Trapped
+
+        <br>
+
+        <span style="color:orange; font-size:18px;">●</span>
+        Status Unknown / Missing
+
+        <br>
+
+        <span style="color:green; font-size:18px;">●</span>
+        Rescue Recorded
+
+        <br>
+
+        <span style="color:blue; font-size:18px;">●</span>
+        Monitored Site
+
+        <br>
+
+        <span style="color:blue; font-size:18px;">★</span>
+        Selected Site
+
+    </div>
+    """
+
+    m.get_root().html.add_child(
+        folium.Element(
+            legend_html
+        )
+    )
+
+
+    # ========================================================
+    # LAYER CONTROL
+    # ========================================================
 
     folium.LayerControl().add_to(m)
 
-    # --------------------------------------------------------
-    # Display map
-    # --------------------------------------------------------
+
+    # ========================================================
+    # DISPLAY MAP
+    # ========================================================
 
     st_folium(
         m,
@@ -620,26 +864,54 @@ with right_col:
         """
     )
 
-    # --------------------------------------------------------
-    # Project selection
-    # --------------------------------------------------------
 
-    selected_project = st.selectbox(
-        "Select Project Site",
-        df["name"].tolist()
+    # ========================================================
+    # SELECTED PROJECT INFORMATION
+    # ========================================================
+
+    st.markdown(
+        f"""
+        ### 📍 {selected_project}
+
+        **Current Status**
+
+        {selected_data["status"]}
+
+        **Capacity**
+
+        {selected_data["capacity"]}
+        """
     )
 
-    # --------------------------------------------------------
-    # Get selected project
-    # --------------------------------------------------------
-
-    proj_data = df[
-        df["name"] == selected_project
-    ].iloc[0]
 
     # --------------------------------------------------------
-    # Update form
+    # GPS information
     # --------------------------------------------------------
+
+    if (
+        pd.notna(selected_data["lat"])
+        and pd.notna(selected_data["lon"])
+    ):
+
+        st.caption(
+            f"GPS: "
+            f"{selected_data['lat']:.6f}, "
+            f"{selected_data['lon']:.6f}"
+        )
+
+    else:
+
+        st.caption(
+            "GPS coordinates not available for this site."
+        )
+
+
+    st.divider()
+
+
+    # ========================================================
+    # UPDATE FORM
+    # ========================================================
 
     with st.form(
         "update_form",
@@ -648,38 +920,61 @@ with right_col:
 
         rescued = st.number_input(
             "👷 Workers Rescued",
+
             min_value=0,
-            value=int(proj_data["rescued"]),
+
+            value=int(
+                selected_data["rescued"]
+            ),
+
             step=1
         )
+
 
         trapped = st.number_input(
             "🚨 Trapped / Awaiting Rescue",
+
             min_value=0,
-            value=int(proj_data["trapped"]),
+
+            value=int(
+                selected_data["trapped"]
+            ),
+
             step=1
         )
+
 
         unknown = st.number_input(
             "❓ Status Unknown / Missing",
+
             min_value=0,
-            value=int(proj_data["unknown"]),
+
+            value=int(
+                selected_data["unknown"]
+            ),
+
             step=1
         )
 
+
         status = st.text_input(
             "🏗️ Project Operational / Damage Status",
-            value=str(proj_data["status"])
+
+            value=str(
+                selected_data["status"]
+            )
         )
+
 
         submit = st.form_submit_button(
             "💾 Update Project Data"
         )
 
+
         if submit:
 
             update_record(
-                proj_data["id"],
+                selected_data["id"],
                 rescued,
                 trapped,
                 unknown,
@@ -715,7 +1010,9 @@ display_df = df[
 ].copy()
 
 
-# Rename columns for the dashboard
+# ------------------------------------------------------------
+# Rename columns
+# ------------------------------------------------------------
 
 display_df.columns = [
     "Hydropower Project",
@@ -728,8 +1025,27 @@ display_df.columns = [
 ]
 
 
+# ------------------------------------------------------------
+# Highlight selected row in table
+# ------------------------------------------------------------
+
+def highlight_selected(row):
+
+    if row["Hydropower Project"] == selected_project:
+
+        return [
+            "background-color: #dbeafe; "
+            "font-weight: bold;"
+        ] * len(row)
+
+    return [""] * len(row)
+
+
 st.dataframe(
-    display_df,
+    display_df.style.apply(
+        highlight_selected,
+        axis=1
+    ),
     use_container_width=True,
     hide_index=True
 )
