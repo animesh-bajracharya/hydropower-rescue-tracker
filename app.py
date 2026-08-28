@@ -31,14 +31,113 @@ def init_db():
     ''')
     
     # Pre-populate initial flood rescue data
-    initial_data = [
-        ("Rasuwagadhi Hydropower", 28.271164, 85.377051, "Severely Damaged / Dam Breach", "111 MW", 55, 0, 15),
-        ("Upper Trishuli-1 (UT-1)", 28.1402, 85.2917, "Flooded / Tunnel Evacuation", "216 MW", 350, 100, 25),
-        ("Upper Trishuli-3A", 27.9712, 85.1884, "Operated / Flooded Powerhouse", "60 MW", 0, 0, 40),
-        ("Upper Trishuli-3B", 27.9500, 85.1700, "Under Construction / Damaged", "37 MW", 0, 0, 10),
-        ("Trishuli Hydropower Station", 27.9100, 85.1500, "Operational / Inundated", "24 MW", 0, 0, 5),
-        ("Devighat Hydropower", 27.8683, 85.1275, "Operational / On Alert", "14.1 MW", 0, 0, 0)
-    ]
+   initial_data = [
+    # ---------------- RASUWA ----------------
+    (
+        "Rasuwagadhi Hydropower",
+        28.251111, 85.370139,
+        "Severely Flood Damaged / Rescue Ongoing",
+        "111 MW",
+        4, 93, None
+    ),
+
+    (
+        "Upper Trishuli-1 (UT-1)",
+        28.101250, 85.255972,
+        "Under Construction / Tunnel Rescue",
+        "216 MW",
+        350, None, None
+    ),
+
+    (
+        "Rasuwa Bhotekoshi",
+        28.204722, 85.354167,
+        "Under Construction / Flood Damaged",
+        "120 MW",
+        None, 4, None
+    ),
+
+    (
+        "Sanjen Khola",
+        28.263472, 85.277917,
+        "Operational / Flood Affected",
+        "78 MW",
+        None, None, None
+    ),
+
+    (
+        "Upper Mailung-A",
+        28.185417, 85.208333,
+        "Under Construction / Flood Affected",
+        "6.42 MW",
+        None, None, None
+    ),
+
+    (
+        "Mailung Khola",
+        28.075417, 85.204583,
+        "Operational / Flood Affected",
+        "5 MW",
+        None, 7, None
+    ),
+
+    (
+        "Langtang Khola",
+        28.163881, 85.341079
+        "Pre-Operation / Powerhouse Washed Away / Rescue Ongoing",
+        "20 MW",
+        None, 42, None
+    ),
+
+    (
+        "Chilime Hydropower",
+        28.169722, 85.319583,
+        "Operational / Severely Flood Damaged",
+        "22 MW",
+        None, 8, None
+    ),
+
+    # ---------------- NUWAKOT ----------------
+    (
+        "Upper Trishuli-3A",
+        28.046528, 85.199167,
+        "Operational / Flood Damaged / Staff Rescue",
+        "60 MW",
+        None, None, None
+    ),
+
+    (
+        "Upper Trishuli-3B",
+        28.004583, 85.185000,
+        "Under Construction / Damaged / Staff Missing",
+        "37 MW",
+        None, 12, None
+    ),
+
+    (
+        "Middle Trishuli Ganga",
+        None, None,
+        "Under Construction / Flood Affected",
+        "15.625 MW",
+        None, None, None
+    ),
+
+    (
+        "Trishuli Hydropower Station",
+        27.946389, 85.166111,
+        "Operational / Flood Damaged",
+        "24 MW",
+        None, None, None
+    ),
+
+    (
+        "Devighat Hydropower",
+        27.902222, 85.138889,
+        "Operational / Flood Affected",
+        "14.1 MW",
+        None, None, None
+    ),
+]
     
     for item in initial_data:
         c.execute('''
