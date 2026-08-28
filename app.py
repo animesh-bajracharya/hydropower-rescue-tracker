@@ -120,9 +120,9 @@ initial_data = [
     ),
 
     (
-        "Chilime Hydropower",
-        28.169722,
-        85.319583,
+        "Chilime Hydropower Plant Site Office",
+        28.165684,
+        85.340518,
         "Operational / Severely Flood Damaged",
         "22 MW",
         0,
