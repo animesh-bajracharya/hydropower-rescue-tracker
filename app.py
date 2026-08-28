@@ -178,6 +178,17 @@ initial_data = [
     ),
     
     (
+        "Upper Trishuli-3B Adit Tunnel",
+        28.010176,
+        85.181577,
+        "Under Construction / Damaged / Staff Missing",
+        "37 MW",
+        0,
+        12,
+        0
+    ),
+    
+    (
         "Upper Trishuli-3B",
         28.004583,
         85.185000,
