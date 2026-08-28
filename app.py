@@ -54,8 +54,8 @@ initial_data = [
 
     (
         "Rasuwagadhi Hydropower",
-        28.251111,
-        85.370139,
+        28.271201,
+        85.376954,
         "Severely Flood Damaged / Rescue Ongoing",
         "111 MW",
         4,
