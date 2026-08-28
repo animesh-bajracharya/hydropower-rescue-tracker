@@ -30,8 +30,10 @@ def init_db():
         )
     ''')
     
-    # Pre-populate initial flood rescue data
-   initial_data = [
+# Recommended schema:
+# (project, latitude, longitude, status, capacity, rescued, missing, deaths)
+
+initial_data = [
     # ---------------- RASUWA ----------------
     (
         "Rasuwagadhi Hydropower",
