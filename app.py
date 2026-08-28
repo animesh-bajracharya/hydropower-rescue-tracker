@@ -259,7 +259,7 @@ initial_data = [
         27.890981,
         85.134356,
         "Operational / Flood Affected",
-        "14.1 MW",
+        "24 MW",
         0,
         0,
         0
