@@ -222,6 +222,27 @@ initial_data = [
     ),
 
     (
+        "Trishuli Hydropower Canal",
+        27.925401,
+        85.147146,
+        "Operational / Flood Damaged",
+        "24 MW",
+        0,
+        0,
+        0
+    ),
+    
+    (
+        "Trishuli Hydropower Power House",
+        27.921457,
+        85.145913,
+        "Operational / Flood Damaged",
+        "24 MW",
+        0,
+        0,
+        0
+    ),
+    (
         "Devighat Hydropower",
         27.902222,
         85.138889,
