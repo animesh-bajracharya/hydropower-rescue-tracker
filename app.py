@@ -85,7 +85,7 @@ initial_data = [
 
     (
         "Langtang Khola",
-        28.163881, 85.341079
+        28.163881, 85.341079,
         "Pre-Operation / Powerhouse Washed Away / Rescue Ongoing",
         "20 MW",
         None, 42, None
