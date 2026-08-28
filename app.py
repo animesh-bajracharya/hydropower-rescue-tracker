@@ -64,6 +64,17 @@ initial_data = [
     ),
 
     (
+        "Power House of Rasuwagadhi Hydropower",
+        28.239364,
+        85.357702,
+        "Severely Flood Damaged / Rescue Ongoing",
+        "111 MW",
+        0,
+        0,
+        0
+    ),
+
+    (
         "Upper Trishuli-1 (UT-1)",
         28.101250,
         85.255972,
