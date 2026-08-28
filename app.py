@@ -130,6 +130,16 @@ initial_data = [
         0
     ),
 
+    (
+        "Chilime Hydropower Station",
+        28.157655,
+        85.332012,
+        "Operational / Severely Flood Damaged",
+        "22 MW",
+        0,
+        8,
+        0
+    ),
     # ---------------- NUWAKOT ----------------
 
     (
