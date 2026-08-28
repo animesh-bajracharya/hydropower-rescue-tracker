@@ -156,6 +156,28 @@ initial_data = [
     ),
 
     (
+        "Upper Trishuli-3A Hydropower Office",
+        28.027158,
+        85.189622,
+        "Operational / Flood Damaged / Staff Rescue",
+        "60 MW",
+        0,
+        0,
+        0
+    ),
+
+    (
+        "Upper Trishuli-3A Powerhouse",
+        28.025518,
+        85.186025,
+        "Operational / Flood Damaged / Staff Rescue",
+        "60 MW",
+        0,
+        0,
+        0
+    ),
+    
+    (
         "Upper Trishuli-3B",
         28.004583,
         85.185000,
