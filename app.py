@@ -32,7 +32,7 @@ def init_db():
     
     # Pre-populate initial flood rescue data
     initial_data = [
-        ("Rasuwagadhi Hydropower", 28.2618, 85.3783, "Severely Damaged / Dam Breach", "111 MW", 55, 0, 15),
+        ("Rasuwagadhi Hydropower", 28.271164, 85.377051, "Severely Damaged / Dam Breach", "111 MW", 55, 0, 15),
         ("Upper Trishuli-1 (UT-1)", 28.1402, 85.2917, "Flooded / Tunnel Evacuation", "216 MW", 350, 100, 25),
         ("Upper Trishuli-3A", 27.9712, 85.1884, "Operated / Flooded Powerhouse", "60 MW", 0, 0, 40),
         ("Upper Trishuli-3B", 27.9500, 85.1700, "Under Construction / Damaged", "37 MW", 0, 0, 10),
