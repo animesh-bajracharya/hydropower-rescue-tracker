@@ -244,8 +244,8 @@ initial_data = [
     ),
     (
         "Devighat Hydropower",
-        27.902222,
-        85.138889,
+        27.888675,
+        85.133819,
         "Operational / Flood Affected",
         "14.1 MW",
         0,
