@@ -146,8 +146,8 @@ initial_data = [
 
     (
         "Upper Trishuli-3A",
-        28.046528,
-        85.199167,
+        28.063835,
+        85.206792,
         "Operational / Flood Damaged / Staff Rescue",
         "60 MW",
         0,
