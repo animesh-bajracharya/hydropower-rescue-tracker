@@ -75,8 +75,8 @@ initial_data = [
 
     (
         "Upper Trishuli-1 (UT-1)",
-        28.101250,
-        85.255972,
+        28.120012,
+        85.288452,
         "Under Construction / Tunnel Rescue",
         "216 MW",
         350,
