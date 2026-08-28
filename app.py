@@ -212,8 +212,8 @@ initial_data = [
 
     (
         "Trishuli Hydropower Station",
-        27.946389,
-        85.166111,
+        27.963010,
+        85.170522,
         "Operational / Flood Damaged",
         "24 MW",
         0,
