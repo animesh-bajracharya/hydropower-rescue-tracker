@@ -141,7 +141,7 @@ initial_data = [
     ),
 ]
     
-   for item in initial_data:
+  for item in initial_data:
         c.execute('''
             INSERT OR IGNORE INTO projects (name, lat, lon, status, capacity, rescued, trapped, unknown)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
