@@ -190,8 +190,8 @@ initial_data = [
     
     (
         "Upper Trishuli-3B",
-        28.004583,
-        85.185000,
+        27.995746,
+        85.183409,
         "Under Construction / Damaged / Staff Missing",
         "37 MW",
         0,
