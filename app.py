@@ -242,10 +242,22 @@ initial_data = [
         0,
         0
     ),
+    
     (
         "Devighat Hydropower",
         27.888675,
         85.133819,
+        "Operational / Flood Affected",
+        "14.1 MW",
+        0,
+        0,
+        0
+    ),
+   
+    (
+        "Nuwakot Solar Power Station",
+        27.890981,
+        85.134356,
         "Operational / Flood Affected",
         "14.1 MW",
         0,
