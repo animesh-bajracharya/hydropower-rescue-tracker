@@ -226,58 +226,81 @@ with left_col:
 
 
 # ============================================================
-# UPDATE & ENTRY PANEL
+# UPDATE & ENTRY PANEL (ADMIN ACCESS ONLY)
 # ============================================================
 
 with right_col:
-    st.subheader("✏️ Edit Selected Site")
+    st.subheader("🔒 Admin Control Panel")
 
-    with st.form("update_form", clear_on_submit=False):
-        name = st.text_input("📍 Project Name", value=str(selected_data["name"]))
-        rescued = st.number_input("👷 Workers Rescued", min_value=0, value=int(selected_data["rescued"]), step=1)
-        trapped = st.number_input("🚨 Trapped / Awaiting Rescue", min_value=0, value=int(selected_data["trapped"]), step=1)
-        unknown = st.number_input("❓ Status Unknown / Missing", min_value=0, value=int(selected_data["unknown"]), step=1)
-        status = st.text_input("🏗️ Project Operational / Damage Status", value=str(selected_data["status"]))
+    # Password input field
+    admin_input = st.text_input(
+        "Enter Admin Key to unlock editing",
+        type="password",
+        help="Only authorized personnel can update site statuses."
+    )
 
-        submit = st.form_submit_button("💾 Save Project Updates")
+    # Check if input matches secret key
+    if admin_input == st.secrets.get("ADMIN_PASSWORD"):
+        st.success("🔓 Authenticated as Admin")
 
-        if submit:
-            update_record(int(selected_data["id"]), name, rescued, trapped, unknown, status)
-            st.success(f"Updated {name} successfully in Supabase!")
-            st.rerun()
+        # ----------------------------------------------------
+        # EDIT SELECTED SITE FORM
+        # ----------------------------------------------------
+        st.markdown("### ✏️ Edit Selected Site")
+        with st.form("update_form", clear_on_submit=False):
+            name = st.text_input("📍 Project Name", value=str(selected_data["name"]))
+            rescued = st.number_input("👷 Workers Rescued", min_value=0, value=int(selected_data["rescued"]), step=1)
+            trapped = st.number_input("🚨 Trapped / Awaiting Rescue", min_value=0, value=int(selected_data["trapped"]), step=1)
+            unknown = st.number_input("❓ Status Unknown / Missing", min_value=0, value=int(selected_data["unknown"]), step=1)
+            status = st.text_input("🏗️ Project Operational / Damage Status", value=str(selected_data["status"]))
 
-    st.divider()
+            submit = st.form_submit_button("💾 Save Project Updates")
 
-    with st.expander("➕ Add New Project Site"):
-        with st.form("add_form", clear_on_submit=True):
-            new_name = st.text_input("Project Name *")
-            new_capacity = st.text_input("Capacity (e.g., 25 MW)")
-            new_status = st.text_input("Initial Status", value="Under Assessment")
-            
-            c_lat, c_lon = st.columns(2)
-            new_lat = c_lat.number_input("Latitude", value=0.0, format="%.6f")
-            new_lon = c_lon.number_input("Longitude", value=0.0, format="%.6f")
+            if submit:
+                update_record(int(selected_data["id"]), name, rescued, trapped, unknown, status)
+                st.success(f"Updated {name} successfully!")
+                st.rerun()
 
-            p1, p2, p3 = st.columns(3)
-            new_rescued = p1.number_input("Rescued", min_value=0, value=0)
-            new_trapped = p2.number_input("Trapped", min_value=0, value=0)
-            new_unknown = p3.number_input("Unknown", min_value=0, value=0)
+        st.divider()
 
-            add_submit = st.form_submit_button("➕ Register New Project")
+        # ----------------------------------------------------
+        # ADD NEW SITE FORM
+        # ----------------------------------------------------
+        with st.expander("➕ Add New Project Site"):
+            with st.form("add_form", clear_on_submit=True):
+                new_name = st.text_input("Project Name *")
+                new_capacity = st.text_input("Capacity (e.g., 25 MW)")
+                new_status = st.text_input("Initial Status", value="Under Assessment")
+                
+                c_lat, c_lon = st.columns(2)
+                new_lat = c_lat.number_input("Latitude", value=0.0, format="%.6f")
+                new_lon = c_lon.number_input("Longitude", value=0.0, format="%.6f")
 
-            if add_submit:
-                if not new_name.strip():
-                    st.error("Project Name is required.")
-                else:
-                    success, msg = add_new_project(
-                        new_name.strip(), new_lat, new_lon, new_status,
-                        new_capacity, new_rescued, new_trapped, new_unknown
-                    )
-                    if success:
-                        st.success(msg)
-                        st.rerun()
+                p1, p2, p3 = st.columns(3)
+                new_rescued = p1.number_input("Rescued", min_value=0, value=0)
+                new_trapped = p2.number_input("Trapped", min_value=0, value=0)
+                new_unknown = p3.number_input("Unknown", min_value=0, value=0)
+
+                add_submit = st.form_submit_button("➕ Register New Project")
+
+                if add_submit:
+                    if not new_name.strip():
+                        st.error("Project Name is required.")
                     else:
-                        st.error(msg)
+                        success, msg = add_new_project(
+                            new_name.strip(), new_lat, new_lon, new_status,
+                            new_capacity, new_rescued, new_trapped, new_unknown
+                        )
+                        if success:
+                            st.success(msg)
+                            st.rerun()
+                        else:
+                            st.error(msg)
+
+    elif admin_input:
+        st.error("Incorrect Admin Key.")
+    else:
+        st.info("ℹ️ Read-only mode. Enter the Admin Key above to edit data or register new sites.")
 
 
 # ============================================================
