@@ -222,6 +222,34 @@ with left_col:
                 icon=folium.Icon(color=marker_color, icon="info-sign")
             ).add_to(m)
 
+    # ----------------------------------------------------
+    # MAP LEGEND OVERLAY
+    # ----------------------------------------------------
+    legend_html = """
+    <div style="
+        position: fixed; 
+        bottom: 30px; 
+        left: 30px; 
+        width: 220px; 
+        z-index: 9999; 
+        background-color: white; 
+        padding: 12px 15px; 
+        border-radius: 8px; 
+        box-shadow: 0 0 12px rgba(0,0,0,0.3);
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+    ">
+        <b style="font-size: 13px;">🚨 Map Status Legend</b><hr style="margin: 5px 0;">
+        <div><span style="background: #d9534f; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 6px;"></span> <b>Trapped / Awaiting</b></div>
+        <div><span style="background: #f0ad4e; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 6px;"></span> <b>Status Unknown</b></div>
+        <div><span style="background: #5cb85c; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 6px;"></span> <b>Rescued / Safe</b></div>
+        <div><span style="background: #0275d8; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 6px;"></span> <b>Normal / Monitored</b></div>
+        <div><span style="border: 2px solid #0275d8; background: rgba(2, 117, 216, 0.2); width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 6px;"></span> <b>Selected Site Halo</b></div>
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_html))
+
     st_folium(m, width="100%", height=600)
 
 
