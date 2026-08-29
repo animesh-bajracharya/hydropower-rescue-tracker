@@ -200,7 +200,7 @@ with left_col:
         if is_selected:
             folium.Circle(
                 location=[float(row["lat"]), float(row["lon"])],
-                radius=600,
+                radius=300,
                 color="blue",
                 fill=True,
                 fill_color="blue",
