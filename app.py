@@ -34,7 +34,6 @@ supabase = init_supabase()
 # ============================================================
 
 def get_data() -> pd.DataFrame:
-    # Fetch all records from the projects table sorted by ID
     response = supabase.table("projects").select("*").order("id").execute()
     
     if not response.data:
@@ -118,18 +117,31 @@ st.divider()
 
 
 # ============================================================
-# PROJECT SELECTION
+# PROJECT SELECTION & SESSION STATE MANAGEMENT
 # ============================================================
 
 st.subheader("📍 Select Project")
 
 if not df.empty:
+    project_names = df["name"].tolist()
+    
+    # Initialize session state for selected project if not present
+    if "selected_project" not in st.session_state or st.session_state["selected_project"] not in project_names:
+        st.session_state["selected_project"] = project_names[0]
+
+    def on_dropdown_change():
+        st.session_state["selected_project"] = st.session_state["select_box_key"]
+
     selected_project = st.selectbox(
         "Select a project to highlight on the map",
-        df["name"].tolist(),
+        project_names,
+        index=project_names.index(st.session_state["selected_project"]),
+        key="select_box_key",
+        on_change=on_dropdown_change,
         label_visibility="collapsed"
     )
-    selected_data = df[df["name"] == selected_project].iloc[0]
+
+    selected_data = df[df["name"] == st.session_state["selected_project"]].iloc[0]
 else:
     st.info("No projects available in the database yet.")
     st.stop()
@@ -195,7 +207,7 @@ with left_col:
         </div>
         """
 
-        is_selected = (row["name"] == selected_project)
+        is_selected = (row["name"] == st.session_state["selected_project"])
 
         if is_selected:
             folium.Circle(
@@ -211,14 +223,14 @@ with left_col:
             folium.Marker(
                 location=[float(row["lat"]), float(row["lon"])],
                 popup=folium.Popup(popup_html, max_width=350),
-                tooltip=f"📍 SELECTED: {row['name']}",
+                tooltip=f"{row['name']}",
                 icon=folium.Icon(color="blue", icon="star", prefix="fa")
             ).add_to(m)
         else:
             folium.Marker(
                 location=[float(row["lat"]), float(row["lon"])],
                 popup=folium.Popup(popup_html, max_width=350),
-                tooltip=row["name"],
+                tooltip=f"{row['name']}",
                 icon=folium.Icon(color=marker_color, icon="info-sign")
             ).add_to(m)
 
@@ -250,7 +262,15 @@ with left_col:
     """
     m.get_root().html.add_child(folium.Element(legend_html))
 
-    st_folium(m, width="100%", height=600)
+    # Capture click interactions on map elements
+    map_data = st_folium(m, width="100%", height=600)
+
+    # If user clicks on a map marker, update selected_project and trigger a rerun
+    if map_data and map_data.get("last_object_clicked_tooltip"):
+        clicked_name = str(map_data["last_object_clicked_tooltip"]).replace("📍 SELECTED: ", "").strip()
+        if clicked_name in project_names and clicked_name != st.session_state["selected_project"]:
+            st.session_state["selected_project"] = clicked_name
+            st.rerun()
 
 
 # ============================================================
